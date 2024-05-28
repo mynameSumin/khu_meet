@@ -11,6 +11,7 @@ class _JoinPageWidget extends State<JoinPage>{
   @override
   Widget build(BuildContext context){
     return MaterialApp(
+        debugShowCheckedModeBanner: false,
       home: Scaffold(
         body: Center(
           child: Column(
