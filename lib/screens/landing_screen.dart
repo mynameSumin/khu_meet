@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:khu_meet/screens/login_screen.dart';
-import 'package:khu_meet/screens/join_screen.dart';
+import 'package:khu_meet/screens/school_certification_screen.dart';
 
 class circlePainter extends CustomPainter{
   @override
@@ -68,8 +68,8 @@ class Landing extends StatelessWidget {
               Container(
                 width: 300,
                 alignment: Alignment.center,
-                margin: EdgeInsets.only(top: 80, bottom: 0),
-                padding: EdgeInsets.only(top: 20, bottom: 70),
+                margin: EdgeInsets.only(top: 80, bottom: 20),
+                padding: EdgeInsets.only(top: 20, bottom: 50),
                 decoration: BoxDecoration(
                   border: Border(bottom: BorderSide(color: Colors.white, width: 3), top: BorderSide(color: Colors.white, width: 3)),
                 ),
@@ -78,7 +78,7 @@ class Landing extends StatelessWidget {
               ),
               CustomPaint(
                 painter: circlePainter(),
-                size: Size(300,250),
+                size: Size(300,260),
                 ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
@@ -105,7 +105,7 @@ class Landing extends StatelessWidget {
               onPressed: (){
                 Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => JoinPage())
+                    MaterialPageRoute(builder: (context) => SchoolCertificationPage())
                 );
               },
             ),
