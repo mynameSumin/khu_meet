@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 //나중에 지우기
-import 'package:khu_meet/screens/join_screen.dart';
+import 'package:khu_meet/screens/select_info_screen.dart';
 
 class Login extends StatefulWidget {
   @override
@@ -42,7 +42,7 @@ class _LoginState extends State<Login> {
                 TextButton(onPressed: (){
                   Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => JoinPage())
+                      MaterialPageRoute(builder: (context) => SelectInfoPage())
                   );
                 }, child: Text("확인"))]
           ));
@@ -155,43 +155,6 @@ class _LoginState extends State<Login> {
                             id = value;
                           },
                         ),
-                        // Container(
-                        //   alignment: Alignment.centerLeft,
-                        //   margin: EdgeInsets.fromLTRB(10, 30, 0, 10),
-                        //   child: Text("비밀번호", style: TextStyle(
-                        //       fontSize: 25, fontFamily: "title", color: Colors.white
-                        //   ),),
-                        // ),
-                        // Container(
-                        //   margin: EdgeInsets.only(bottom: 50),
-                        //   child: TextFormField(
-                        //     style: TextStyle(
-                        //         color: Colors.white
-                        //     ),
-                        //     decoration: InputDecoration(
-                        //       filled: true,
-                        //       fillColor: Colors.black.withOpacity(0.2),
-                        //       hintText: "비밀번호를 입력하세요",
-                        //       hintStyle: TextStyle(
-                        //         color: Colors.white,
-                        //       ),
-                        //       contentPadding: EdgeInsets.fromLTRB(15, 0, 10, 0),
-                        //       border: OutlineInputBorder(
-                        //         borderRadius: BorderRadius.circular(10),
-                        //         borderSide: BorderSide.none,
-                        //       ),
-                        //     ),
-                        //     validator: (value){
-                        //       if(value?.isEmpty ?? false){
-                        //         return "비밀번호를 입력해주세요";
-                        //       }
-                        //       return null;
-                        //     },
-                        //     onSaved: (String? value){
-                        //       password = value;
-                        //     },
-                        //   ),
-                        // ),
                       ],
                     ),
                   ),
