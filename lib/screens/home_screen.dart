@@ -1,7 +1,8 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
-import 'package:khu_meet/screens/landing_screen.dart';
+import 'package:khu_meet/widgets/percent.dart';
+import 'package:khu_meet/widgets/card.dart';
+import 'landing_screen.dart';
 
 class HomePage extends StatefulWidget {
   final Future<Map<String, dynamic>?> userInfo;
@@ -14,24 +15,64 @@ class HomePage extends StatefulWidget {
   }
 }
 
-class _HomePageWidget extends State<HomePage>{
+class _HomePageWidget extends State<HomePage> {
   Map<String, dynamic>? _user;
+  PageController _pageController = PageController(viewportFraction: 0.8);
+
+  final List<String> cardTexts = [
+    '더 좋아하는\n동물은?',
+    '더 좋아하는\n색깔은?',
+    '더 좋아하는\n음식은?',
+    '더 좋아하는\n음료는?',
+    '더 좋아하는\n운동은?',
+  ];
+
+  final List<String> cardselections = [
+    '강아지 vs 고양이',
+    '빨강 vs 파랑',
+    '피자 vs 햄버거',
+    '커피 vs 차',
+    '축구 vs 농구',
+  ];
+
+  String selectedOption = '';
+  double selectedPercentage = 0.5;
+  int num = 0;
+
+  void handleSelectOption(String option) {
+    setState(() {
+      selectedOption = option;
+      // 선택된 옵션에 따라 퍼센티지 설정
+      selectedPercentage = (selectedOption == '강아지' || selectedOption == '빨강' ||
+          selectedOption == '피자' || selectedOption == '커피' || selectedOption == '축구')
+          ? 0.75
+          : 0.25;
+    });
+  }
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme: ThemeData(
+        fontFamily: "title",
+      ),
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         body: FutureBuilder<Map<String, dynamic>?>(
           future: widget.userInfo,
-          builder: (context, info){
-            if(info.connectionState == ConnectionState.waiting){
-              return Text("loading ...");
-            } else if(info.hasError){
+          builder: (context, info) {
+            if (info.connectionState == ConnectionState.waiting) {
+              return Center(child: CircularProgressIndicator());
+            } else if (info.hasError) {
               return Center(
                 child: Text("error 발생"),
               );
-            }else{
+            } else {
               _user = info.data;
               print("_user : ${_user}");
               return Container(
@@ -46,26 +87,30 @@ class _HomePageWidget extends State<HomePage>{
                   ),
                 ),
                 child: Column(
-                  children: [Container(
-                    decoration: BoxDecoration(
-                      border: Border(top: BorderSide(color: Colors.white, width: 2), ),
-                    ),
-                    alignment: Alignment.centerLeft,
-                    margin: EdgeInsets.only(left: 30, top: 40, right: 30, bottom: 5),
-                    child: TextButton(onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => Landing())
-                      );
-                    },
-                        style: TextButton.styleFrom(
-                        ),
-                        child: Text("< ${widget.univ}",
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        border: Border(top: BorderSide(color: Colors.white, width: 2)),
+                      ),
+                      alignment: Alignment.centerLeft,
+                      margin: EdgeInsets.only(left: 30, top: 60, right: 30, bottom: 5),
+                      child: TextButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => Landing()),
+                          );
+                        },
+                        style: TextButton.styleFrom(),
+                        child: Text(
+                          "< ${widget.univ}",
                           style: TextStyle(
                             fontSize: 15,
                             color: Colors.white,
-                          ),)),
-                  ),
+                          ),
+                        ),
+                      ),
+                    ),
                     Text(
                       '취향 카드',
                       style: TextStyle(
@@ -75,17 +120,41 @@ class _HomePageWidget extends State<HomePage>{
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    SizedBox(height: 10),
                     Expanded(
                       child: PageView.builder(
-                        itemCount: 5, // 카드의 총 개수
+                        controller: _pageController,
+                        itemCount: cardTexts.length,
+                        onPageChanged: (index){
+                          setState(() {
+                            num = index;
+                            selectedPercentage = 0.5;
+                          });
+                        },// 카드의 총 개수
                         itemBuilder: (context, index) {
-                          return CardWidget(index: index);
+                          return AnimatedBuilder(
+                            animation: _pageController,
+                            builder: (context, child) {
+                              double value = 1;
+                              if (_pageController.position.haveDimensions) {
+                                value = _pageController.page! - index;
+                                value = (1 - (value.abs() * 0.3)).clamp(0.0, 1.0);
+                              }
+                              return Transform.scale(
+                                scale: value,
+                                child: CardWidget(
+                                  index: index,
+                                  selection: cardselections[index],
+                                  text: cardTexts[index],
+                                  onSelect: handleSelectOption,
+                                ),
+                              );
+                            },
+                          );
                         },
                       ),
                     ),
-                    Padding(
-                      padding: EdgeInsets.all(16.0),
+                    Container(
+                      padding: EdgeInsets.all(30.0),
                       child: Column(
                         children: [
                           Text(
@@ -93,9 +162,9 @@ class _HomePageWidget extends State<HomePage>{
                             style: TextStyle(color: Colors.white, fontSize: 18),
                           ),
                           SizedBox(height: 10),
-                          PercentageBar(label: '강아지', percentage: 0.75),
-                          SizedBox(height: 10),
-                          PercentageBar(label: '고양이', percentage: 0.25),
+                          PercentageBar(label: cardselections[num], percentage: selectedPercentage),
+                          // SizedBox(height: 10),
+                          // PercentageBar(label: '고양이', percentage: 0.25),
                         ],
                       ),
                     ),
@@ -114,55 +183,6 @@ class _HomePageWidget extends State<HomePage>{
           ],
         ),
       ),
-    );
-  }
-}
-
-
-class PercentageBar extends StatelessWidget {
-  final String label;
-  final double percentage;
-
-  PercentageBar({required this.label, required this.percentage});
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Text(
-          label,
-          style: TextStyle(color: Colors.white, fontSize: 18),
-        ),
-        SizedBox(width: 10),
-        Expanded(
-          child: Stack(
-            children: [
-              Container(
-                height: 20,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-              FractionallySizedBox(
-                widthFactor: percentage,
-                child: Container(
-                  height: 20,
-                  decoration: BoxDecoration(
-                    color: Colors.pink,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-        SizedBox(width: 10),
-        Text(
-          '${(percentage * 100).toStringAsFixed(0)} %',
-          style: TextStyle(color: Colors.white, fontSize: 18),
-        ),
-      ],
     );
   }
 }

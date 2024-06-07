@@ -1,14 +1,22 @@
+import 'package:flutter/material.dart';
+import 'package:khu_meet/widgets/elevator_button.dart';
+
 class CardWidget extends StatelessWidget {
   final int index;
+  final String text;
+  final String selection;
+  final ValueChanged<String> onSelect;
 
-  CardWidget({required this.index});
+  CardWidget({required this.index, required this.selection, required this.text, required this.onSelect});
 
   @override
   Widget build(BuildContext context) {
+    List<String> options = selection.split(' vs ');
+
     return Center(
       child: Container(
-        width: 300,
-        height: 400,
+        width: 260,
+        height: 300,
         margin: EdgeInsets.symmetric(horizontal: 10.0),
         decoration: BoxDecoration(
           color: Colors.white,
@@ -17,16 +25,34 @@ class CardWidget extends StatelessWidget {
             BoxShadow(
               color: Colors.black26,
               blurRadius: 10,
-              offset: Offset(0, 5),
+              offset: Offset(0, 8),
             ),
           ],
         ),
-        child: Center(
-          child: Text(
-            '더 좋아하는\n동물은?\n강아지 vs 고양이',
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [Text(
+            text,
             textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 24, color: Colors.black),
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              height: 1.7,
+              letterSpacing: 1.2,
+              fontSize: 28,
+              color: Colors.black,
+            ),
           ),
+            SizedBox(height: 20),
+            ElevatorButton(
+              label: options[0],
+              onPressed: () => onSelect(options[0]),
+            ),
+            SizedBox(height: 10),
+            ElevatorButton(
+              label: options[1],
+              onPressed: () => onSelect(options[1]),
+            ),
+          ]
         ),
       ),
     );
