@@ -1,22 +1,23 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-//나중에 지우기
-import 'package:khu_meet/screens/select_info_screen.dart';
+import 'package:khu_meet/screens/home_screen.dart';
+import 'package:khu_meet/service/user.dart';
 
-class Login extends StatefulWidget {
+class LoginPage extends StatefulWidget {
   @override
   State<StatefulWidget> createState(){
     return _LoginState();
   }
 }
 
-class _LoginState extends State<Login> {
+class _LoginState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
-  String? id;
-  String? password;
+  final _formKey2 = GlobalKey<FormState>();
+  String? email;
+  String? univ;
 
-  logIn(String? schoolEmail) async {
+  logIn(String? schoolEmail, String? univ) async {
     print("onPressPost 함수 실행");
     var client = http.Client();
     Map<String, String> headers = {
@@ -34,7 +35,9 @@ class _LoginState extends State<Login> {
     Map<String, dynamic> list = jsonDecode(responseBody);
 
     if(list['success'] == true){
+      Future<Map<String, dynamic>?> userInfo = loginUser(schoolEmail!, univ!);
       print("응답 : ${response.body}");
+      print("받아온 사용자 정보 : ${userInfo}");
       showDialog(context: context,
           builder: (context)=> AlertDialog(
               title: Text("로그인에 성공하였습니다"),
@@ -42,7 +45,7 @@ class _LoginState extends State<Login> {
                 TextButton(onPressed: (){
                   Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => SelectInfoPage())
+                      MaterialPageRoute(builder: (context) => HomePage(userInfo: userInfo, univ: univ))
                   );
                 }, child: Text("확인"))]
           ));
@@ -124,6 +127,50 @@ class _LoginState extends State<Login> {
                         Container(
                           alignment: Alignment.centerLeft,
                           margin: EdgeInsets.fromLTRB(10, 30, 0, 10),
+                          child: Text("학교명", style: TextStyle(
+                              fontSize: 25, fontFamily: "title", color: Colors.white
+                          ),),
+                        ),
+                        TextFormField(
+                          style: TextStyle(
+                              color: Colors.white
+                          ),
+                          decoration: InputDecoration(
+                            filled: true,
+                            fillColor: Colors.black.withOpacity(0.2),
+                            contentPadding: EdgeInsets.fromLTRB(15, 0, 10, 0),
+                            hintText: "학교명을 입력하세요",
+                            hintStyle: TextStyle(
+                              color: Colors.white,
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: BorderSide.none,
+                            ),
+                          ),
+                          validator: (value){
+                            if(value?.isEmpty ?? false){
+                              return "학교명을 입력해주세요";
+                            }
+                            return null;
+                          },
+                          onSaved: (String? value){
+                            univ = value;
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                Container(
+                  margin: EdgeInsets.fromLTRB(30, 0, 30, 80),
+                  child: Form(
+                    key: _formKey2,
+                    child: Column(
+                      children: [
+                        Container(
+                          alignment: Alignment.centerLeft,
+                          margin: EdgeInsets.fromLTRB(10, 0, 0, 10),
                           child: Text("학교 이메일", style: TextStyle(
                               fontSize: 25, fontFamily: "title", color: Colors.white
                           ),),
@@ -147,12 +194,12 @@ class _LoginState extends State<Login> {
                           ),
                           validator: (value){
                             if(value?.isEmpty ?? false){
-                              return "아이디를 입력해주세요";
+                              return "이메일을 입력해주세요";
                             }
                             return null;
                           },
                           onSaved: (String? value){
-                            id = value;
+                            email = value;
                           },
                         ),
                       ],
@@ -162,8 +209,8 @@ class _LoginState extends State<Login> {
                 ElevatedButton(onPressed: (){
                   if(_formKey.currentState?.validate() ?? false){
                     _formKey.currentState?.save();
-                    print("아이디 : $id, 비밀번호 : $password");
-                    logIn(id);
+                    _formKey2.currentState?.save();
+                    logIn(email, univ);
                   }
                 },
                     style: ElevatedButton.styleFrom(

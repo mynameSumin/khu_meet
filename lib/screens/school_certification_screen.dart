@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:khu_meet/screens/join_screen.dart';
+import 'package:khu_meet/screens/select_info_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -127,7 +127,7 @@ class _CerfPageWidget extends State<SchoolCertificationPage>{
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => JoinPage()),
+                    MaterialPageRoute(builder: (context) => SelectInfoPage(email: email!, univ: schoolName!)),
                   );
                 },
                 child: Text("확인"),

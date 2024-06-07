@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:html/parser.dart' as parser;
 
 class getDepartment extends StatefulWidget {
-  final Function(bool) dataChanged;
+  final Function(bool, String, String) dataChanged;
   getDepartment({required this.dataChanged});
   @override
   _getDepartment createState() => _getDepartment();
@@ -24,8 +24,10 @@ class _getDepartment extends State<getDepartment> {
   }
 
   void sendData(){
-    widget.dataChanged(selectCollege != null && selectDepart != null);
+    widget.dataChanged(
+        (selectCollege != null && selectDepart != null), selectCollege!, selectDepart!);
   }
+
   void crawling() async {
     var uri = Uri.parse("https://www.khu.ac.kr/kor/user/contents/view.do?menuNo=200105");
     http.Response response = await http.get(uri);

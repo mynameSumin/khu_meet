@@ -1,10 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:khu_meet/screens/landing_screen.dart';
-import 'package:khu_meet/service/getDepartment.dart';
+import 'package:khu_meet/service/get_department.dart';
 import 'package:khu_meet/screens/join_screen.dart';
 
 class SelectInfoPage extends StatefulWidget {
+  final String email;
+  final String univ;
+  const SelectInfoPage({required this.email, required this.univ});
   @override
   State<StatefulWidget> createState() {
     return _SelectInfoPageWidget();
@@ -17,10 +20,15 @@ class _SelectInfoPageWidget extends State<SelectInfoPage>{
   String? selectMBTI;
   int? selectStudentID;
   bool selectCollege = false;
+  String? college;
+  String? depart;
 
-  void updateCollege(bool newData){
+  void updateCollege(bool newData, String newCollege, String newDepart){
     setState(() {
       selectCollege = newData;
+      college = newCollege;
+      depart = newDepart;
+
     });
   }
 
@@ -116,7 +124,7 @@ class _SelectInfoPageWidget extends State<SelectInfoPage>{
                               dropdownColor: Colors.black.withOpacity(0.3),
                               onChanged: (value){
                                 setState(() {
-                                  selectMBTI = value as String?;
+                                  selectMBTI = value;
                                 });
                               }),
                         ),
@@ -158,7 +166,7 @@ class _SelectInfoPageWidget extends State<SelectInfoPage>{
                                 Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) => JoinPage()));
+                                        builder: (context) => JoinPage(email: widget.email, univ: widget.univ, mbti: selectMBTI!, studentId: selectStudentID!, college: college!, depart: depart! )));
                               }else{
                             showDialog(context: context,
                                 builder: (context)=> AlertDialog(
