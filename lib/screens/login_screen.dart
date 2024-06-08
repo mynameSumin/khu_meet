@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:khu_meet/screens/home_screen.dart';
-import 'package:khu_meet/service/user.dart';
+import 'package:khu_meet/service/user_api.dart';
 
 class LoginPage extends StatefulWidget {
   @override

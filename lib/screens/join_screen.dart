@@ -5,7 +5,7 @@ import 'package:khu_meet/screens/join_complete_screen.dart';
 import 'package:khu_meet/screens/landing_screen.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
-import "package:khu_meet/service/user.dart";
+import "package:khu_meet/service/user_api.dart";
 
 class JoinPage extends StatefulWidget {
   final String email;

@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:khu_meet/widgets/elevator_button.dart';
+import '../models/options.dart';
 
 class CardWidget extends StatelessWidget {
   final int index;
   final String text;
-  final String selection;
+  final List<Option> selection;
   final ValueChanged<String> onSelect;
 
   CardWidget({required this.index, required this.selection, required this.text, required this.onSelect});
 
   @override
   Widget build(BuildContext context) {
-    List<String> options = selection.split(' vs ');
 
     return Center(
       child: Container(
@@ -31,26 +31,30 @@ class CardWidget extends StatelessWidget {
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [Text(
-            text,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              height: 1.7,
-              letterSpacing: 1.2,
-              fontSize: 28,
-              color: Colors.black,
+          children: [
+            Container(
+              margin: EdgeInsets.fromLTRB(20, 0, 20, 0),
+              child: Text(
+              text,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                height: 1.7,
+                letterSpacing: 1.2,
+                fontSize: 28,
+                color: Colors.black,
+              ),
+                        ),
             ),
-          ),
             SizedBox(height: 20),
             ElevatorButton(
-              label: options[0],
-              onPressed: () => onSelect(options[0]),
+              label: selection[0].optionText,
+              onPressed: () => onSelect(selection[0].optionText),
             ),
             SizedBox(height: 10),
             ElevatorButton(
-              label: options[1],
-              onPressed: () => onSelect(options[1]),
+              label: selection[1].optionText,
+              onPressed: () => onSelect(selection[1].optionText),
             ),
           ]
         ),
