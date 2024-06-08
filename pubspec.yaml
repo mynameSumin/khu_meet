@@ -84,7 +84,7 @@ flutter:
     - family: title
       fonts:
       - asset: assets/fonts/ChosunNm.ttf
-
+        weight: 700
   # fonts:
   #   - family: Schyler
   #     fonts:

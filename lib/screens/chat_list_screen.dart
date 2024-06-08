@@ -9,52 +9,86 @@ class ChatListScreen extends StatelessWidget {
     {"name": "김○○", "message": "안녕하세요!", "image": "assets/user4.jpg"},
     {"name": "배○○", "message": "네!", "image": "assets/user5.jpg"},
     {"name": "강○○", "message": "그럼 시간 언제 되세요?", "image": "assets/user6.jpg"},
-    {"name": "조○○", "message": "", "image": "assets/user7.jpg"},
+    {"name": "조○○", "message": "ㅋㅋㅋㅋ", "image": "assets/user7.jpg"},
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('경희대학교'),
-      ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextField(
-              decoration: InputDecoration(
-                prefixIcon: Icon(Icons.search),
-                hintText: 'Search chats',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(20),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Color(0xffA3BDED),
+              Color(0xff5A80B2),
+            ],
+          ),
+        ),
+        child: Column(
+          children: [
+            Container(
+                decoration: BoxDecoration(
+                  border: Border(top: BorderSide(color: Colors.white, width: 2)),
+                ),
+                alignment: Alignment.centerLeft,
+                margin: EdgeInsets.only(left: 30, top: 60, right: 30, bottom: 5),
+                padding: EdgeInsets.only(top: 15, left: 10),
+                child: Text("경희대학교",
+                style: TextStyle(
+                  fontSize: 15,
+                  color: Colors.white
+                ),)),
+            Padding(
+              padding: const EdgeInsets.only(left: 30, right: 30, top: 5),
+              child: TextField(
+                decoration: InputDecoration(
+                  filled: true,
+                  fillColor: Colors.white.withOpacity(0.8),
+                  prefixIcon: Icon(Icons.search),
+                  hintText: 'Search chats',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20),
+                    borderSide: BorderSide.none
+                  ),
                 ),
               ),
             ),
-          ),
-          Expanded(
-            child: ListView.builder(
-              itemCount: chatUsers.length,
-              itemBuilder: (context, index) {
-                return ListTile(
-                  leading: CircleAvatar(
-                    backgroundImage: AssetImage(chatUsers[index]["image"]!),
-                  ),
-                  title: Text(chatUsers[index]["name"]!),
-                  subtitle: Text(chatUsers[index]["message"]!),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ChatScreen(user: chatUsers[index]),
+            Expanded(
+              child: ListView.builder(
+                itemCount: chatUsers.length,
+                itemBuilder: (context, index) {
+                  return Container(
+                    decoration: BoxDecoration(
+                      border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.2), width: 1)),
+                    ),
+                    margin: EdgeInsets.only(left: 30, right: 40),
+                    child: ListTile(
+                      leading: CircleAvatar(
+                        backgroundImage: AssetImage(chatUsers[index]["image"]!),
                       ),
-                    );
-                  },
-                );
-              },
+                      title: Text(chatUsers[index]["name"]!, style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),),
+                      subtitle: Text(chatUsers[index]["message"]!, style: TextStyle(
+                        color: Colors.black38.withOpacity(0.9)
+                      ),),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ChatScreen(user: chatUsers[index]),
+                          ),
+                        );
+                      },
+                    ),
+                  );
+                },
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

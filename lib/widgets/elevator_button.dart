@@ -12,7 +12,7 @@ class ElevatorButton extends StatelessWidget {
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
         minimumSize: Size(200,50),
-        foregroundColor: Colors.blue, // 버튼 색상
+        foregroundColor: Colors.black.withOpacity(0.2), // 버튼 색상
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
         ),

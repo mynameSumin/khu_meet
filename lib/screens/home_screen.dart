@@ -4,8 +4,6 @@ import 'package:khu_meet/screens/chat_list_screen.dart';
 import 'package:khu_meet/widgets/percent.dart';
 import 'package:khu_meet/widgets/card.dart';
 import 'landing_screen.dart';
-import 'home_screen.dart';  // HomeScreen, ChatScreen, ProfileScreen 임포트
-import 'chat_screen.dart';
 import 'profile_screen.dart';
 
 class HomePage extends StatefulWidget {
