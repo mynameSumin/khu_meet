@@ -62,6 +62,7 @@ class QuestionsApi {
     }
   }
 
+  //특정 유저의 모든 선택값 가져오기
   Future<List<dynamic>> getUserSelections(String userId) async {
     final response = await http.get(
       Uri.parse('$baseUrl/selections/user/$userId'),
@@ -71,6 +72,26 @@ class QuestionsApi {
       return jsonDecode(response.body);
     } else {
       throw Exception('Failed to load user selections');
+    }
+  }
+
+  //응답지 수정하기
+  Future<void> updateSelection(String userId, String questionId, String optionId) async {
+    print(userId);
+    final response = await http.put(
+      Uri.parse('$baseUrl/selections/update'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'user_id': userId,
+        'question_id': questionId,
+        'option_id': optionId
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      print('Selection updated successfully');
+    } else {
+      print('Failed to update selection');
     }
   }
 }

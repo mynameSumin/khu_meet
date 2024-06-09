@@ -52,11 +52,14 @@ class PercentageBar extends StatelessWidget {
               ),
             ),
             SizedBox(width: 10),
-            Text(
-              percentages[index] == null
-                  ? '?? %'
-                  : '${(percentages[index]! * 100).toStringAsFixed(0)} %',
-              style: TextStyle(color: Colors.white, fontSize: 18),
+            Container(
+              width: 55,
+              child: Text(
+                percentages[index] == null
+                    ? '?? %'
+                    : '${(percentages[index]! * 100).toStringAsFixed(0)} %',
+                style: TextStyle(color: Colors.white, fontSize: 18),
+              ),
             ),
           ],
         );

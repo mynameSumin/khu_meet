@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:khu_meet/widgets/elevator_button.dart';
 import '../models/options.dart';
 
+
 class CardWidget extends StatelessWidget {
   final int index;
   final String text;
@@ -17,7 +18,6 @@ class CardWidget extends StatelessWidget {
       child: Container(
         width: 260,
         height: 300,
-        margin: EdgeInsets.symmetric(horizontal: 10.0),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(15),
@@ -50,12 +50,12 @@ class CardWidget extends StatelessWidget {
             SizedBox(height: 20),
             ElevatorButton(
               label: selection[0].optionText,
-              onPressed: () => onSelect(selection[0].optionText),
+              onPressed: () => onSelect(selection[0].id),
             ),
             SizedBox(height: 10),
             ElevatorButton(
               label: selection[1].optionText,
-              onPressed: () => onSelect(selection[1].optionText),
+              onPressed: () => onSelect(selection[1].id),
             ),
           ]
         ),

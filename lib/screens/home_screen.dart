@@ -60,13 +60,34 @@ class _HomePageWidget extends State<HomePage> {
   // 각 옵션에 대한 응답 개수를 가져오는 함수
   Future<List<int>> getOptionResponseCounts(String questionId) async {
     try {
-      List<dynamic> optionSelect = await QuestionsApi().getSelectionCountByQuestion(questionId);
+      List<dynamic> optionSelect = await QuestionsApi()
+          .getSelectionCountByQuestion(questionId);
+      print(optionSelect[0]);
       List<int> optionResponseCounts = [];
-      for (dynamic option in optionSelect) {
-        int responseCount = option['count'] ?? 0;
-        optionResponseCounts.add(responseCount);
+
+      if (optionSelect.length == 2) {
+        for (dynamic option in optionSelect) {
+          int responseCount = option['count'] ?? 0;
+          optionResponseCounts.add(responseCount);
+        }
+      } else {
+        // 질문 아이디에 해당하는 옵션 목록 가져오기
+        List<Option> options = await QuestionsApi().getOptions(questionId);
+
+        // 존재하는 선택지가 몇 번째 선택지인지 가져오기
+        for (int i = 0; i < options.length; i++) {
+          if (options[i].id == optionSelect[0]['option_id']) {
+            for (int j = 0; j < 2; j++) {
+              if (j == i) {
+                optionResponseCounts.add(optionSelect[0]['count']);
+              } else {
+                optionResponseCounts.add(0);
+              }
+            }
+          }
+        }
       }
-      return optionResponseCounts;
+        return optionResponseCounts;
     } catch (e) {
       print("Error fetching option response counts: $e");
       return [];
@@ -74,15 +95,20 @@ class _HomePageWidget extends State<HomePage> {
   }
 
   void handleSelectOption(String optionId) async {
+    if(selectedOption == "") {
+      await QuestionsApi().saveSelection(_user?["email"], selectedQuestionId!, optionId);
+    }else{
+      await QuestionsApi().updateSelection(_user?["email"], selectedQuestionId!, optionId);
+    }
     setState(() {
       selectedOption = optionId;
     });
     List<int> responseCounts = await getOptionResponseCounts(selectedQuestionId!);
+    print(responseCounts.length);
     if (responseCounts.length > 1) {
       int totalResponses = responseCounts.reduce((a, b) => a + b);
       List<double?> percentages = responseCounts.map((count) => count / totalResponses).toList();
       setState(() {
-        print(percentages[0]);
         selectedPercentages = percentages;
       });
     }
@@ -275,6 +301,26 @@ class _HomePageWidget extends State<HomePage> {
                             },
                           ),
                         ),
+                      Container(
+                        width: 370,
+                        height: 50,
+                        margin: EdgeInsets.fromLTRB(0, 20, 0, 10),
+                        child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.black.withOpacity(0.7),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10)
+                              )
+                            ),
+                            onPressed: (){
+                              Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => MatchPeoplePage()),
+                            );},
+                          child: Text("취향 기반 이상형 찾으러 가기", style: TextStyle(
+                            color: Colors.white
+                          ),)),
+                      )
                     ],
                   ),
                 );

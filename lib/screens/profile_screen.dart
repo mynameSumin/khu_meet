@@ -166,7 +166,6 @@ class _ProfileScreenState extends State<ProfilePage> {
                     shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(14),
                     ),
-
                   ),
                   onPressed: () {},
                   child: Text('소개 수정하기', style: TextStyle(
