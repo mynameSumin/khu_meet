@@ -29,4 +29,49 @@ class QuestionsApi {
       throw Exception('Failed to load options');
     }
   }
+
+  //질문의 응답지 선택시 사용자가 어떤 질문에 어떤 대답을 했는지 저장
+  Future<void> saveSelection(String userId, String questionId, String optionId) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/selections'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'user_id': userId,
+        'question_id': questionId,
+        'option_id': optionId
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      print('Selection saved successfully');
+    } else {
+      print('Failed to save selection');
+    }
+  }
+
+  //특정 질문에 대한 각 응답 개수 가져오기
+  Future<List<dynamic>> getSelectionCountByQuestion(String questionId) async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/selections/selection-count/$questionId'),
+    );
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception('Failed to load selection counts');
+    }
+  }
+
+  Future<List<dynamic>> getUserSelections(String userId) async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/selections/user/$userId'),
+    );
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception('Failed to load user selections');
+    }
+  }
 }
+

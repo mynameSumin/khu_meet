@@ -38,6 +38,7 @@ class CardWidget extends StatelessWidget {
               text,
               textAlign: TextAlign.center,
               style: TextStyle(
+                fontFamily: "title",
                 fontWeight: FontWeight.bold,
                 height: 1.7,
                 letterSpacing: 1.2,

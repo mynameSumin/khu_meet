@@ -1,24 +1,29 @@
 import 'package:flutter/material.dart';
+import '../models/options.dart';
 
 class PercentageBar extends StatelessWidget {
-  final String label;
-  final double percentage;
+  final List<Option> label;
+  final List<double?> percentages; // percentage를 nullable로 변경
 
-  PercentageBar({required this.label, required this.percentage});
+  PercentageBar({required this.label, required this.percentages});
 
   @override
   Widget build(BuildContext context) {
-    List<String> options = label.split(' vs ');
+    List<String> options = [label[0].optionText, label[1].optionText];
+
+    if (options.length != percentages.length) {
+      throw ArgumentError("The number of options and percentages must be equal.");
+    }
 
     return Column(
-      children: options.map((option) {
+      children: List.generate(options.length, (index) {
         return Row(
           children: [
             Container(
               width: 50,
               alignment: Alignment.center,
               child: Text(
-                option,
+                options[index],
                 style: TextStyle(color: Colors.white, fontSize: 18),
               ),
             ),
@@ -34,7 +39,7 @@ class PercentageBar extends StatelessWidget {
                     ),
                   ),
                   FractionallySizedBox(
-                    widthFactor: percentage,
+                    widthFactor: percentages[index] ?? 0.0,
                     child: Container(
                       height: 20,
                       decoration: BoxDecoration(
@@ -48,12 +53,14 @@ class PercentageBar extends StatelessWidget {
             ),
             SizedBox(width: 10),
             Text(
-              '${(percentage * 100).toStringAsFixed(0)} %',
+              percentages[index] == null
+                  ? '?? %'
+                  : '${(percentages[index]! * 100).toStringAsFixed(0)} %',
               style: TextStyle(color: Colors.white, fontSize: 18),
             ),
           ],
         );
-      }).toList(),
+      }),
     );
   }
 }

@@ -25,6 +25,7 @@ class _HomePageWidget extends State<HomePage> {
   //취향 카드 정보 받아오기
   late Future<List<Question>> questions;
   late Future<List<Option>> options;
+  late Future<List<dynamic>> optionSelect;
   String? selectedQuestionId;
 
   //카드 회전을 위한 변수 선언
@@ -34,8 +35,7 @@ class _HomePageWidget extends State<HomePage> {
   int _selectedIndex = 0; // BottomNavigationBar의 현재 선택된 인덱스
 
   String selectedOption = '';
-  double selectedPercentage = 0.5;
-
+  List<double?> selectedPercentages = []; // 변경된 부분
 
   @override
   void initState(){
@@ -45,6 +45,7 @@ class _HomePageWidget extends State<HomePage> {
       if (questionList.isNotEmpty) {
         selectedQuestionId = questionList[0].id;
         options = QuestionsApi().getOptions(selectedQuestionId!);
+        optionSelect = QuestionsApi().getSelectionCountByQuestion(selectedQuestionId!);
       }
     });
   }
@@ -56,15 +57,35 @@ class _HomePageWidget extends State<HomePage> {
     });
   }
 
-  void handleSelectOption(String option) {
+  // 각 옵션에 대한 응답 개수를 가져오는 함수
+  Future<List<int>> getOptionResponseCounts(String questionId) async {
+    try {
+      List<dynamic> optionSelect = await QuestionsApi().getSelectionCountByQuestion(questionId);
+      List<int> optionResponseCounts = [];
+      for (dynamic option in optionSelect) {
+        int responseCount = option['count'] ?? 0;
+        optionResponseCounts.add(responseCount);
+      }
+      return optionResponseCounts;
+    } catch (e) {
+      print("Error fetching option response counts: $e");
+      return [];
+    }
+  }
+
+  void handleSelectOption(String optionId) async {
     setState(() {
-      selectedOption = option;
-      // 선택된 옵션에 따라 퍼센티지 설정
-      selectedPercentage = (selectedOption == '강아지' || selectedOption == '빨강' ||
-          selectedOption == '피자' || selectedOption == '커피' || selectedOption == '축구')
-          ? 0.75
-          : 0.25;
+      selectedOption = optionId;
     });
+    List<int> responseCounts = await getOptionResponseCounts(selectedQuestionId!);
+    if (responseCounts.length > 1) {
+      int totalResponses = responseCounts.reduce((a, b) => a + b);
+      List<double?> percentages = responseCounts.map((count) => count / totalResponses).toList();
+      setState(() {
+        print(percentages[0]);
+        selectedPercentages = percentages;
+      });
+    }
   }
 
   @override
@@ -116,115 +137,104 @@ class _HomePageWidget extends State<HomePage> {
                 return Center(child: Text('No questions available'));
               } else {
                 final questions = snapshot.data!;
-              return Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Color(0xffA3BDED),
-                      Color(0xff5A80B2),
-                    ],
+                return Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Color(0xffA3BDED),
+                        Color(0xff5A80B2),
+                      ],
+                    ),
                   ),
-                ),
-                child: Column(
-                  children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        border: Border(top: BorderSide(color: Colors.white, width: 2)),
-                      ),
-                      alignment: Alignment.centerLeft,
-                      margin: EdgeInsets.only(left: 30, top: 60, right: 30, bottom: 5),
-                      child: TextButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => Landing()),
-                          );
-                        },
-                        style: TextButton.styleFrom(),
-                        child: Text(
-                          "< ${widget.univ}",
-                          style: TextStyle(
-                            fontSize: 15,
-                            color: Colors.white,
+                  child: Column(
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(
+                          border: Border(top: BorderSide(color: Colors.white, width: 2)),
+                        ),
+                        alignment: Alignment.centerLeft,
+                        margin: EdgeInsets.only(left: 30, top: 60, right: 30, bottom: 5),
+                        child: TextButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => Landing()),
+                            );
+                          },
+                          style: TextButton.styleFrom(),
+                          child: Text(
+                            "< ${widget.univ}",
+                            style: TextStyle(
+                              fontSize: 15,
+                              color: Colors.white,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                    Text(
-                      '취향 카드',
-                      style: TextStyle(
-                        fontSize: 50,
-                        fontFamily: "title",
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
+                      Text(
+                        '취향 카드',
+                        style: TextStyle(
+                          fontSize: 50,
+                          fontFamily: "title",
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
-                    Expanded(
-                      child: PageView.builder(
-                        controller: _pageController,
-                        itemCount: questions.length, // 카드의 총 개수
-                        onPageChanged: (index) {
-                          setState(() {
-                            _currentIndex = index; // 페이지 변경 시 현재 페이지 인덱스 업데이트
-                            onQuestionSelected(questions[index].id);
-                          });
-                        },
-                        itemBuilder: (context, index) {
-                          return FutureBuilder<List<Option>>(
-                            future: options,
-                            builder: (context, snapshot) {
-                              if (snapshot.connectionState ==
-                                  ConnectionState.waiting) {
-                                return Center(
-                                    child: CircularProgressIndicator());
-                              } else if (snapshot.hasError) {
-                                return Center(
-                                    child: Text('Failed to load options'));
-                              } else
-                              if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                                return Center(
-                                    child: Text('No options available'));
-                              } else {
-                                List<Option> options = snapshot.data!;
-                                return AnimatedBuilder(
-                                  animation: _pageController,
-                                  builder: (context, child) {
-                                    double value = 1;
-                                    if (_pageController.position
-                                        .haveDimensions) {
-                                      value = _pageController.page! - index;
-                                      value = (1 - (value.abs() * 0.3)).clamp(
-                                          0.0, 1.0);
-                                    }
-                                    return Transform.scale(
-                                      scale: value,
-                                      child: CardWidget(
-                                        index: index,
-                                        selection: options,
-                                        text: questions[index].questionText,
-                                        onSelect: handleSelectOption,
-                                      ),
-                                    );
-                                  },
-                                );
-                              }
-                            }
-                          );
-                        },
+                      Expanded(
+                        child: PageView.builder(
+                          controller: _pageController,
+                          itemCount: questions.length, // 카드의 총 개수
+                          onPageChanged: (index) {
+                            setState(() {
+                              _currentIndex = index; // 페이지 변경 시 현재 페이지 인덱스 업데이트
+                              onQuestionSelected(questions[index].id);
+                              selectedPercentages = [];
+                              getOptionResponseCounts(questions[index].id);
+                            });
+                          },
+                          itemBuilder: (context, index) {
+                            return FutureBuilder<List<Option>>(
+                              future: options,
+                              builder: (context, snapshot) {
+                                if (snapshot.connectionState == ConnectionState.waiting) {
+                                  return Center(child: CircularProgressIndicator());
+                                } else if (snapshot.hasError) {
+                                  return Center(child: Text('Failed to load options'));
+                                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                                  return Center(child: Text('No options available'));
+                                } else {
+                                  List<Option> options = snapshot.data!;
+                                  return AnimatedBuilder(
+                                    animation: _pageController,
+                                    builder: (context, child) {
+                                      double value = 1;
+                                      if (_pageController.position.haveDimensions) {
+                                        value = _pageController.page! - index;
+                                        value = (1 - (value.abs() * 0.3)).clamp(0.0, 1.0);
+                                      }
+                                      return Transform.scale(
+                                        scale: value,
+                                        child: CardWidget(
+                                          index: index,
+                                          selection: options,
+                                          text: questions[index].questionText,
+                                          onSelect: handleSelectOption,
+                                        ),
+                                      );
+                                    },
+                                  );
+                                }
+                              },
+                            );
+                          },
+                        ),
                       ),
-                    ),
-                    Container(
-                      padding: EdgeInsets.all(30.0),
-                      child: Column(
-                        children: [
-                          Text(
-                            '당신과 취향이 비슷한 사람의 비율은?',
-                            style: TextStyle(color: Colors.white, fontSize: 18),
-                          ),
-                          SizedBox(height: 10),
-                          FutureBuilder<List<Option>>(
+                      if (selectedPercentages.isNotEmpty)
+                        Container(
+                          margin: EdgeInsets.all(20),
+                          child: FutureBuilder<List<Option>>(
                             future: options,
                             builder: (context, snapshot) {
                               if (snapshot.connectionState == ConnectionState.waiting) {
@@ -236,23 +246,40 @@ class _HomePageWidget extends State<HomePage> {
                               } else {
                                 List<Option> options = snapshot.data!;
                                 return PercentageBar(
-                                  label: options.map((e) => e.optionText).join(' vs '),
-                                  percentage: selectedPercentage,
+                                  label: options,
+                                  percentages: selectedPercentages,
                                 );
                               }
                             },
                           ),
-                          ElevatedButton(onPressed: (){
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => MatchPeoplePage()));
-                          }, child: Text("detail"))
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            }
-            }
+                        ),
+                      if(selectedPercentages.isEmpty)
+                        Container(
+                          margin: EdgeInsets.all(20),
+                          child: FutureBuilder<List<Option>>(
+                            future: options,
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState == ConnectionState.waiting) {
+                                return Center(child: CircularProgressIndicator());
+                              } else if (snapshot.hasError) {
+                                return Center(child: Text('Failed to load options'));
+                              } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                                return Center(child: Text('No options available'));
+                              } else {
+                                List<Option> options = snapshot.data!;
+                                return PercentageBar(
+                                  label: options,
+                                  percentages: [null,null],
+                                );
+                              }
+                            },
+                          ),
+                        ),
+                    ],
+                  ),
+                );
+              }
+            },
           );
         }
       },
