@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'match_detail_screen.dart';
 
 class MatchPeoplePage extends StatelessWidget {
+  final VoidCallback onBack;
+  MatchPeoplePage({required this.onBack});
+
   final List<Map<String, String>> cards = [
     {'title': '컴퓨터공학과 xx학번', 'department': '컴퓨터공학과', 'year': 'xx학번', 'image': 'assets/images/cat.jpeg'},
     {'title': '국제학과 xx학번', 'department': '국제학과', 'year': 'xx학번', 'image': 'assets/images/cat.jpeg'},
@@ -33,11 +36,11 @@ class MatchPeoplePage extends StatelessWidget {
               margin: EdgeInsets.only(left: 30, top: 60, right: 30, bottom: 5),
               child: TextButton(
                 onPressed: () {
-                  Navigator.pop(context);
+                  onBack();
                 },
                 style: TextButton.styleFrom(),
                 child: Text(
-                  "<",
+                  "< 뒤로가기",
                   style: TextStyle(
                     fontSize: 15,
                     color: Colors.white,
@@ -92,23 +95,6 @@ class MatchPeoplePage extends StatelessWidget {
             ),
           ],
         ),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.chat),
-            label: '채팅',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: '마이페이지',
-          ),
-        ],
-        selectedItemColor: Colors.blue,
       ),
     );
   }

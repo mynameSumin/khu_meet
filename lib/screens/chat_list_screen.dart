@@ -3,7 +3,7 @@ import 'chat_screen.dart';
 
 class ChatListScreen extends StatelessWidget {
   final List<Map<String, String>> chatUsers = [
-    {"name": "김○○", "message": "그러자", "image": "assets/user1.jpg"},
+    {"name": "김○○", "message": "그러자", "image": "assets/images/cat.jpeg"},
     {"name": "이○○", "message": "내일 뭐해?", "image": "assets/user2.jpg"},
     {"name": "박○○", "message": "난 수업 왔어", "image": "assets/user3.jpg"},
     {"name": "김○○", "message": "안녕하세요!", "image": "assets/user4.jpg"},
@@ -36,10 +36,10 @@ class ChatListScreen extends StatelessWidget {
                 margin: EdgeInsets.only(left: 30, top: 60, right: 30, bottom: 5),
                 padding: EdgeInsets.only(top: 15, left: 10),
                 child: Text("경희대학교",
-                style: TextStyle(
-                  fontSize: 15,
-                  color: Colors.white
-                ),)),
+                  style: TextStyle(
+                      fontSize: 15,
+                      color: Colors.white
+                  ),)),
             Padding(
               padding: const EdgeInsets.only(left: 30, right: 30, top: 5),
               child: TextField(
@@ -49,8 +49,8 @@ class ChatListScreen extends StatelessWidget {
                   prefixIcon: Icon(Icons.search),
                   hintText: 'Search chats',
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(20),
-                    borderSide: BorderSide.none
+                      borderRadius: BorderRadius.circular(20),
+                      borderSide: BorderSide.none
                   ),
                 ),
               ),
@@ -72,15 +72,17 @@ class ChatListScreen extends StatelessWidget {
                         fontWeight: FontWeight.bold,
                       ),),
                       subtitle: Text(chatUsers[index]["message"]!, style: TextStyle(
-                        color: Colors.black38.withOpacity(0.9)
+                          color: Colors.black38.withOpacity(0.9)
                       ),),
                       onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => ChatScreen(user: chatUsers[index]),
-                          ),
-                        );
+                        if (chatUsers[index] != null) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ChatScreen(user: chatUsers[index]),
+                            ),
+                          );
+                        }
                       },
                     ),
                   );

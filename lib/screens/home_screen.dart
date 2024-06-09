@@ -33,6 +33,7 @@ class _HomePageWidget extends State<HomePage> {
   PageController _pageController = PageController(viewportFraction: 0.8);
   int _currentIndex = 0; // 현재 페이지를 추적하기 위한 변수
   int _selectedIndex = 0; // BottomNavigationBar의 현재 선택된 인덱스
+  bool isMatchPeople = false; //페이지 추적 변수 추가
 
   String selectedOption = '';
   List<double?> selectedPercentages = []; // 변경된 부분
@@ -123,10 +124,24 @@ class _HomePageWidget extends State<HomePage> {
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
+      isMatchPeople = false;
+    });
+  }
+
+  void goMatchPeople(){
+    setState(() {
+      isMatchPeople = true;
     });
   }
 
   Widget _buildBody() {
+    if(isMatchPeople){
+      return MatchPeoplePage(onBack : (){
+        setState(() {
+          isMatchPeople = false;
+        });
+      });
+    }
     switch (_selectedIndex) {
       case 0:
         return _buildHomePageContent();
@@ -313,10 +328,8 @@ class _HomePageWidget extends State<HomePage> {
                               )
                             ),
                             onPressed: (){
-                              Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => MatchPeoplePage()),
-                            );},
+                              goMatchPeople();
+                            },
                           child: Text("취향 기반 이상형 찾으러 가기", style: TextStyle(
                             color: Colors.white
                           ),)),
