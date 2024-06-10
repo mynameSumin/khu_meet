@@ -94,5 +94,32 @@ class QuestionsApi {
       print('Failed to update selection');
     }
   }
+
+  // 특정 질문에 대해 사용자가 응답한 적이 있는지 확인
+  Future<bool> hasAnswered(String userId, String questionId) async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/selections/has-answered/$userId/$questionId'),
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      return data['hasAnswered'];
+    } else {
+      throw Exception('Failed to check if the user has answered');
+    }
+  }
+
+  //사용자와 비슷한 취향자들 나열
+  Future<List<dynamic>> getMatchingResults(String email) async {
+    final response = await http.get(Uri.parse('$baseUrl/selections/matching-results/$email'));
+
+    if (response.statusCode == 200) {
+      return json.decode(response.body);
+    } else {
+      throw Exception('Failed to load matching results');
+    }
+  }
 }
+
+
 

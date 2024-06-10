@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import '../widgets/chat_bubble.dart';
 
-class ChatScreen extends StatelessWidget {
-  final Map<String, String> user;
-
-  ChatScreen({super.key, required this.user});
+class ExampleChatScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
@@ -13,13 +10,13 @@ class ChatScreen extends StatelessWidget {
         title: Row(
           children: [
             CircleAvatar(
-              backgroundImage: AssetImage(user["image"]!),
+              backgroundImage: AssetImage('assets/images/cat.jpeg'),
             ),
             SizedBox(width: 10),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(user["name"]!, style: TextStyle(fontSize: 16)),
+                Text("김ㅇㅇ", style: TextStyle(fontSize: 16)),
 
               ],
             ),
@@ -42,12 +39,12 @@ class ChatScreen extends StatelessWidget {
             child: ListView(
               padding: EdgeInsets.all(10),
               children: [
-                // buildChatBubble('안녕하세요~', true),
-                // buildChatBubble('저랑 취향이 비슷하시네요!', true),
-                // buildChatBubble('오 정말요?', false),
-                // buildChatBubble('몇 개나 같았나요?', false),
-                // buildChatBubble('저랑 5개 중에 4개나 같아요!', true),
-                // buildChatBubble('헉 신기하네요!', false),
+                buildChatBubble('안녕하세요~', true),
+                buildChatBubble('저랑 취향이 비슷하시네요!', true),
+                buildChatBubble('오 정말요?', false),
+                buildChatBubble('몇 개나 같았나요?', false),
+                buildChatBubble('저랑 5개 중에 4개나 같아요!', true),
+                buildChatBubble('헉 신기하네요!', false),
               ],
             ),
           ),

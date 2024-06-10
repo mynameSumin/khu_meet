@@ -3,22 +3,24 @@ import 'package:image_picker/image_picker.dart';
 import 'package:khu_meet/screens/landing_screen.dart';
 import 'dart:io';
 import 'package:khu_meet/widgets/alert.dart';
+import 'select_info_screen.dart';
 
 class ProfilePage extends StatefulWidget {
+  Map<String, dynamic>? user;
+  ProfilePage({super.key, required this.user});
+
   @override
   _ProfileScreenState createState() => _ProfileScreenState();
 }
 
 class _ProfileScreenState extends State<ProfilePage> {
-  File? _image;
-
+  File? image;
   // 갤러리에서 이미지 선택하는 함수
   Future<void> _pickImage() async {
-    final pickedFile = await ImagePicker().pickImage(
-        source: ImageSource.gallery);
+    final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
       setState(() {
-        _image = File(pickedFile.path);
+        image = File(pickedFile.path);
       });
     }
   }
@@ -41,19 +43,17 @@ class _ProfileScreenState extends State<ProfilePage> {
           child: Column(
             children: [
               Container(
-                  decoration: BoxDecoration(
-                    border: Border(
-                        top: BorderSide(color: Colors.white, width: 2)),
-                  ),
-                  alignment: Alignment.centerLeft,
-                  margin: EdgeInsets.only(
-                      left: 30, top: 60, right: 30, bottom: 5),
-                  padding: EdgeInsets.only(top: 15, left: 10),
-                  child: Text("경희대학교",
-                    style: TextStyle(
-                        fontSize: 15,
-                        color: Colors.white
-                    ),)),
+                decoration: BoxDecoration(
+                  border: Border(top: BorderSide(color: Colors.white, width: 2)),
+                ),
+                alignment: Alignment.centerLeft,
+                margin: EdgeInsets.only(left: 30, top: 60, right: 30, bottom: 5),
+                padding: EdgeInsets.only(top: 15, left: 10),
+                child: Text(
+                  widget.user?["college"] ?? "",
+                  style: TextStyle(fontSize: 15, color: Colors.white),
+                ),
+              ),
               Container(
                 margin: EdgeInsets.fromLTRB(20, 10, 20, 20),
                 padding: EdgeInsets.fromLTRB(10, 22, 20, 10),
@@ -73,13 +73,14 @@ class _ProfileScreenState extends State<ProfilePage> {
                 ),
                 child: Column(
                   children: [
-                    Spacer(),
+                    SizedBox(width: 10),
                     Row(
                       children: [
-                        SizedBox(width: 10),
                         CircleAvatar(
                           radius: 50,
-                          //backgroundImage: _image != null ? FileImage(_image!) : Text("hi") as ImageProvider,
+                          backgroundImage: widget.user?['imagePaths'] != null && widget.user?['imagePaths'].isNotEmpty
+                              ? FileImage(File(widget.user?['imagePaths'][0]))
+                              : AssetImage('assets/images/cat.jpeg') as ImageProvider,
                           child: InkWell(
                             onTap: _pickImage,
                             child: Container(
@@ -93,12 +94,30 @@ class _ProfileScreenState extends State<ProfilePage> {
                             ),
                           ),
                         ),
-                        SizedBox(width: 20),
-                        Text(
-                          '컴퓨터공학과 xx학번\n민수민',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 17, fontWeight: FontWeight
-                              .bold),
+                        SizedBox(width: 10),  // Add spacing between the avatar and text
+                        Flexible(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center, // Align text to start
+                            children: [
+                              Text(
+                                widget.user?["department"] ?? "",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold,
+                                overflow: TextOverflow.ellipsis),
+                                maxLines: 1,
+                              ),
+                              Text(
+                                widget.user?["studentId"] != null ? widget.user!["studentId"] + "학번" : "",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
+                              ),
+                              Text(
+                                widget.user?["name"] != null ? widget.user!["name"] : "",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
+                              ),
+                            ],
+                          ),
                         ),
                       ],
                     ),
@@ -106,11 +125,10 @@ class _ProfileScreenState extends State<ProfilePage> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        // 프로필 이미지 위젯
                         ElevatedButton(
                           style: ElevatedButton.styleFrom(
                             minimumSize: Size(20, 28),
-                            padding: EdgeInsets.fromLTRB(15,6,15,6),
+                            padding: EdgeInsets.fromLTRB(15, 6, 15, 6),
                             backgroundColor: Colors.grey.withOpacity(0.3), // 버튼 색상
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(30),
@@ -118,27 +136,29 @@ class _ProfileScreenState extends State<ProfilePage> {
                           ),
                           onPressed: () {
                             Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => Landing())
+                              context,
+                              MaterialPageRoute(builder: (context) => Landing()),
                             );
                           },
-                          child: Text('로그아웃', style: TextStyle(
-                              fontSize: 13, color: Colors.black, fontWeight: FontWeight.bold)),
+                          child: Text('로그아웃', style: TextStyle(fontSize: 13, color: Colors.black, fontWeight: FontWeight.bold)),
                         ),
                         SizedBox(width: 10),
                         ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            padding: EdgeInsets.fromLTRB(15,6,15,6),
+                            padding: EdgeInsets.fromLTRB(15, 6, 15, 6),
                             minimumSize: Size(20, 28),
                             backgroundColor: Colors.grey.withOpacity(0.3), // 버튼 색상
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(30),
                             ),
                           ),
-                          onPressed: () {},
-                          child: Text('정보 수정', style: TextStyle(
-                              fontSize: 13, color: Colors.black, fontWeight: FontWeight.bold)),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => SelectInfoPage(email: widget.user?['email'], univ: "경희대학교")),
+                            );
+                          },
+                          child: Text('정보 수정', style: TextStyle(fontSize: 13, color: Colors.black, fontWeight: FontWeight.bold)),
                         ),
                       ],
                     ),
@@ -160,19 +180,19 @@ class _ProfileScreenState extends State<ProfilePage> {
                 ),
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    padding: EdgeInsets.fromLTRB(15,6,15,6),
+                    padding: EdgeInsets.fromLTRB(15, 6, 15, 6),
                     minimumSize: Size(20, 28),
                     backgroundColor: Colors.black, // 버튼 색상
                     shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
+                      borderRadius: BorderRadius.circular(14),
                     ),
                   ),
                   onPressed: () {},
-                  child: Text('소개 수정하기', style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                    fontSize: 18
-                  ),),
+                  child: Text(
+                    '소개 수정하기',
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold, color: Colors.white, fontSize: 18),
+                  ),
                 ),
               ),
               Container(
@@ -198,31 +218,34 @@ class _ProfileScreenState extends State<ProfilePage> {
                       ),
                       child: Column(
                         children: [
-                          Text('보유 코인', style: TextStyle(
-                            fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white
-                      ),),
-                          Text('3개', style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            fontSize: 12
-                          ),),
+                          Text(
+                            '보유 코인',
+                            style: TextStyle(
+                                fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white),
+                          ),
+                          Text(
+                            '3개',
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, color: Colors.white, fontSize: 12),
+                          ),
                           Spacer(),
                           Align(
                             alignment: Alignment.bottomRight,
                             child: ElevatedButton(
                               style: ElevatedButton.styleFrom(
                                 minimumSize: Size(20, 28),
-                                padding: EdgeInsets.fromLTRB(15,6,15,6),
+                                padding: EdgeInsets.fromLTRB(15, 6, 15, 6),
                                 backgroundColor: Colors.grey.withOpacity(0.3), // 버튼 색상
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(30),
                                 ),
                               ),
                               onPressed: () {},
-                              child: Text('추가 결제',style: TextStyle(
-                                  fontSize: 10, color: Colors.white, fontWeight: FontWeight.bold)),
+                              child: Text(
+                                '추가 결제',
+                                style: TextStyle(
+                                    fontSize: 10, color: Colors.white, fontWeight: FontWeight.bold),
+                              ),
                             ),
                           ),
                         ],
@@ -247,31 +270,34 @@ class _ProfileScreenState extends State<ProfilePage> {
                       ),
                       child: Column(
                         children: [
-                          Text('선택한 취향', style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white
-                          ),),
-                          Text('16개', style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                          ),),
+                          Text(
+                            '선택한 취향',
+                            style: TextStyle(
+                                fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white),
+                          ),
+                          Text(
+                            '16개',
+                            style: TextStyle(
+                                fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white),
+                          ),
                           Spacer(),
                           Align(
                             alignment: Alignment.bottomRight,
                             child: ElevatedButton(
                               style: ElevatedButton.styleFrom(
                                 minimumSize: Size(20, 28),
-                                padding: EdgeInsets.fromLTRB(15,6,15,6),
+                                padding: EdgeInsets.fromLTRB(15, 6, 15, 6),
                                 backgroundColor: Colors.grey.withOpacity(0.3), // 버튼 색상
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(30),
                                 ),
                               ),
                               onPressed: () {},
-                              child: Text('수정하기',style: TextStyle(
-                                  fontSize: 10, color: Colors.white, fontWeight: FontWeight.bold)),
+                              child: Text(
+                                '수정하기',
+                                style: TextStyle(
+                                    fontSize: 10, color: Colors.white, fontWeight: FontWeight.bold),
+                              ),
                             ),
                           ),
                         ],

@@ -33,6 +33,20 @@ class User {
       'mbti': mbti,
     };
   }
+
+  factory User.fromJson(Map<String, dynamic> json) {
+    return User(
+      json['univ'] ?? "",
+      json['email'],
+      json['college'],
+      json['department'],
+      int.parse(json['studentId']),
+      json['name'],
+      json['introduction'],
+      json['mbti'],
+      List<String>.from(json['imagePaths'] ?? []),
+    );
+  }
 }
 
 Future<void> sendUser(User user) async {
@@ -90,3 +104,25 @@ Future<Map<String, dynamic>?> loginUser(String email, String univ) async {
     return null;
   }
 }
+
+//같은 학교의 모든 사용자 정보 가져오기
+Future<List<User>> fetchUsersFromSameSchool(String univ) async {
+  final url = Uri.parse('http://10.0.2.2:3000/users/${Uri.encodeComponent(univ)}');
+  try {
+    final response = await http.get(url);
+    if (response.statusCode == 200) {
+      List<dynamic> responseBody = json.decode(response.body);
+      print(responseBody[1]);
+      List<User> users = responseBody.map((data) => User.fromJson(data..['studentId'] = data['studentId'].toString())).toList();
+      print("성공");
+      return users;
+    } else {
+      print('Failed to fetch users: ${response.statusCode}');
+      return [];
+    }
+  } catch (e) {
+    print('Error fetching users: $e');
+    return [];
+  }
+}
+

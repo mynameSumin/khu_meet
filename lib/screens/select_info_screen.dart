@@ -58,10 +58,7 @@ class _SelectInfoPageWidget extends State<SelectInfoPage>{
                   alignment: Alignment.centerLeft,
                   margin: EdgeInsets.only(left: 30, top: 40, right: 30, bottom: 5),
                   child: TextButton(onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => Landing())
-                    );
+                    Navigator.pop(context);
                   },
                       style: TextButton.styleFrom(
                       ),

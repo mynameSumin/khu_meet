@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'chat_screen.dart';
+import 'example_chat_screen.dart';
 
 class ChatListScreen extends StatelessWidget {
   final List<Map<String, String>> chatUsers = [
-    {"name": "김○○", "message": "그러자", "image": "assets/images/cat.jpeg"},
+    {"name": "김○○", "message": "헉 신기하네요!", "image": "assets/images/cat.jpeg"},
     {"name": "이○○", "message": "내일 뭐해?", "image": "assets/user2.jpg"},
     {"name": "박○○", "message": "난 수업 왔어", "image": "assets/user3.jpg"},
     {"name": "김○○", "message": "안녕하세요!", "image": "assets/user4.jpg"},
@@ -79,8 +80,7 @@ class ChatListScreen extends StatelessWidget {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => ChatScreen(user: chatUsers[index]),
-                            ),
+                              builder: (context) => ExampleChatScreen()),
                           );
                         }
                       },

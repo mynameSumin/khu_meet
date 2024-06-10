@@ -95,6 +95,11 @@ class _HomePageWidget extends State<HomePage> {
     }
   }
 
+  Future<bool> amIcheck(String questionId) async {
+    bool i = await QuestionsApi().hasAnswered(_user?['email'], questionId);
+    return i;
+  }
+
   void handleSelectOption(String optionId) async {
     if(selectedOption == "") {
       await QuestionsApi().saveSelection(_user?["email"], selectedQuestionId!, optionId);
@@ -148,7 +153,7 @@ class _HomePageWidget extends State<HomePage> {
       case 1:
         return ChatListScreen();
       case 2:
-        return ProfilePage();
+        return ProfilePage(user : _user);
       default:
         return _buildHomePageContent();
     }
@@ -228,11 +233,16 @@ class _HomePageWidget extends State<HomePage> {
                           controller: _pageController,
                           itemCount: questions.length, // 카드의 총 개수
                           onPageChanged: (index) {
-                            setState(() {
+                            setState(() async {
                               _currentIndex = index; // 페이지 변경 시 현재 페이지 인덱스 업데이트
                               onQuestionSelected(questions[index].id);
                               selectedPercentages = [];
                               getOptionResponseCounts(questions[index].id);
+                              if(await amIcheck(questions[index].id)){
+                                List<Option> option = await QuestionsApi().getOptions(questions[index].id);
+                                String id = option[0].id;
+                                handleSelectOption(id);
+                              }
                             });
                           },
                           itemBuilder: (context, index) {
